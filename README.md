@@ -1,7 +1,19 @@
 # EASILY CONFIGURE YOUR ARDUINO'S WIFI
-## WORK IN PROGRESS
+**!!!WORK IN PROGRESS!!!**
 
-## TODO: UI
+# UI
+
+**NOTE:** You must load the UI over http not https.
+
+To use the UI:
+
+- Open http://config.arduino-wifi.com
+- Switch your WiFi to the Access Point
+- Configure WiFi credentials.
+- Click Run
+
+## Actual Documentation
+**Coming Soon**
 
 
 # Example CURLS
