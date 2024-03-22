@@ -1,6 +1,9 @@
-Quickping   KEYWORD1
-QuickPingMessage KEYWORD1
-QuickPingConfig KEYWORD1
+WiFiConfig   KEYWORD1
+Request KEYWORD1
+
+printWiFiStatus    KEYWORD2
+saveConfig    KEYWORD2
+loadConfig    KEYWORD2
+startAndRunAccessPoint    KEYWORD2
 loop    KEYWORD2
-begin   KEYWORD2
-sendPing    KEYWORD2
+
