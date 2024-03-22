@@ -36,6 +36,8 @@ void setup()
   if (wifiConfig == NULL || promptForWiFiConfig())
   {
     WiFiConfig newConfig;
+    if (wifiConfig)
+      newConfig = *wifiConfig;
     startAndRunAccessPoint(&newConfig);
     saveConfig(&newConfig);
   }

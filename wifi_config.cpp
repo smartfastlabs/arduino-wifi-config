@@ -4,7 +4,7 @@ const int BUFFER_SIZE = 1024;
 const int GET = 0;
 const int OPTION = 2;
 const int POST = 1;
-const int DATA_SYMBOL = 140;
+const int DATA_SYMBOL = 100;
 
 #if __has_include(<EEPROM.h>)
 void saveConfig(WiFiConfig *config)
@@ -316,8 +316,11 @@ void sendConfigResponse(WiFiClient *client, WiFiConfig *config)
     client->println(config->password);
     client->print("ssid: ");
     client->println(config->ssid);
-    client->print("ip: ");
-    client->println(config->ip->toString());
+    if (config->ip != NULL)
+    {
+        client->print("ip: ");
+        client->println(config->ip->toString());
+    }
     client->println();
     client->println();
 }
@@ -371,14 +374,7 @@ void startAndRunAccessPoint(WiFiConfig *config)
 void startAndRunAccessPoint(WiFiConfig *config, WiFiServer *wifiServer)
 {
     Serial.println("[WC] creating access point: `Arduino WiFi Config AP`");
-    if (config->ip)
-    {
-        WiFi.config(*config->ip);
-    }
-    else
-    {
-        WiFi.config(IPAddress(192, 48, 56, 2));
-    }
+    WiFi.config(IPAddress(192, 48, 56, 2));
     int wifiStatus = WiFi.beginAP("Arduino WiFi Config AP");
     printWiFiStatus();
     if (wifiStatus != WL_AP_LISTENING)
