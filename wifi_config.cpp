@@ -4,30 +4,52 @@ const int BUFFER_SIZE = 1024;
 const int GET = 0;
 const int OPTION = 2;
 const int POST = 1;
+const int DATA_SYMBOL = 140;
 
 #if __has_include(<EEPROM.h>)
 void saveConfig(WiFiConfig *config)
 {
-    EEPROM.write(0, 142);
-    int idx = 1;
+    EEPROM.write(0, DATA_SYMBOL);
+    Serial.print("WRITING DATA TO EEPROM: ");
+    Serial.println(DATA_SYMBOL);
+
+    int eepromIdx = 1;
+    int bufferIdx = 0;
 
     while (true)
     {
-        EEPROM.write(idx, config->ssid[idx - 1]);
-        idx++;
-        if (config->ssid[idx - 1] == '\0')
+        EEPROM.write(eepromIdx++, config->ssid[bufferIdx]);
+        Serial.println(config->ssid[bufferIdx]);
+        if (config->ssid[bufferIdx] == '\0')
         {
             break;
         }
+        bufferIdx++;
     }
+    bufferIdx = 0;
     while (true)
     {
-        EEPROM.write(idx, config->password[idx - 1]);
-        idx++;
-        if (config->password[idx - 1] == '\0')
+        EEPROM.write(eepromIdx++, config->password[bufferIdx]);
+        if (config->password[bufferIdx] == '\0')
         {
             break;
         }
+        bufferIdx++;
+    }
+
+    if (config->ip)
+    {
+        IPAddress ip = *config->ip;
+        EEPROM.write(eepromIdx++, DATA_SYMBOL);
+        EEPROM.write(eepromIdx++, ip[0]);
+        EEPROM.write(eepromIdx++, ip[1]);
+        EEPROM.write(eepromIdx++, ip[2]);
+        EEPROM.write(eepromIdx++, ip[3]);
+    }
+    else
+    {
+
+        EEPROM.write(eepromIdx++, 0);
     }
 }
 
@@ -37,7 +59,7 @@ void freeRequest(Request *req)
 
 WiFiConfig *loadConfig()
 {
-    if (EEPROM.read(0) != 142)
+    if (EEPROM.read(0) != DATA_SYMBOL)
     {
         return NULL;
     }
@@ -48,10 +70,11 @@ WiFiConfig *loadConfig()
     while (true)
     {
         buffer[bufferIdx] = EEPROM.read(eepromIdx++);
-        if (buffer[bufferIdx++] == '\0')
+        if (buffer[bufferIdx] == '\0')
         {
             break;
         }
+        bufferIdx++;
     }
     config->ssid = (char *)malloc(sizeof(char) * (strlen(buffer) + 1));
     strcpy(config->ssid, buffer);
@@ -60,14 +83,29 @@ WiFiConfig *loadConfig()
     while (true)
     {
         buffer[bufferIdx] = EEPROM.read(eepromIdx++);
-        if (buffer[bufferIdx++] == '\0')
+        if (buffer[bufferIdx] == '\0')
         {
             break;
         }
+        bufferIdx++;
     }
 
     config->password = (char *)malloc(sizeof(char) * (strlen(buffer) + 1));
     strcpy(config->password, buffer);
+
+    if (EEPROM.read(eepromIdx++) != DATA_SYMBOL)
+    {
+        return config;
+    }
+
+    IPAddress ip(
+        EEPROM.read(eepromIdx),
+        EEPROM.read(eepromIdx + 1),
+        EEPROM.read(eepromIdx + 2),
+        EEPROM.read(eepromIdx + 3));
+
+    config->ip = (IPAddress *)malloc(sizeof(IPAddress));
+    *config->ip = ip;
 
     return config;
 }
@@ -97,6 +135,12 @@ void printWiFiStatus()
 
 int connectToWiFi(WiFiConfig *config)
 {
+    if (config->ip)
+    {
+        Serial.print("SETTING IP TO: ");
+        Serial.println(config->ip->toString());
+        WiFi.config(*config->ip);
+    }
     int connectionAttempts = 2;
     int wifiStatus = WL_IDLE_STATUS;
     while (wifiStatus != WL_CONNECTED)
@@ -162,6 +206,7 @@ Request *handleConnection(WiFiClient *client)
     char buffer[BUFFER_SIZE];
     int i = 0;
     struct Request *request = (struct Request *)malloc(sizeof(struct Request));
+    request->ip = NULL;
 
     while (client->connected())
     {
@@ -210,6 +255,12 @@ Request *handleConnection(WiFiClient *client)
                 {
                     request->password = (char *)malloc(sizeof(char) * (strlen(&buffer[10]) + 1));
                     strcpy(request->password, &buffer[10]);
+                }
+                else if (isPrefix(buffer, "ip"))
+                {
+                    request->ip = (IPAddress *)malloc(sizeof(IPAddress));
+                    request->ip->fromString(&buffer[4]);
+                    Serial.println(request->ip->toString());
                 }
                 i = 0;
             }
@@ -265,6 +316,8 @@ void sendConfigResponse(WiFiClient *client, WiFiConfig *config)
     client->println(config->password);
     client->print("ssid: ");
     client->println(config->ssid);
+    client->print("ip: ");
+    client->println(config->ip->toString());
     client->println();
     client->println();
 }
@@ -308,13 +361,25 @@ void startAndRunAccessPoint(WiFiConfig *config)
 {
     WiFiServer wifiServer(80);
     startAndRunAccessPoint(config, &wifiServer);
+    while (connectToWiFi(config) != WL_CONNECTED)
+    {
+        Serial.println("[WC] Failed to connect to wifi restarting Access Point");
+        startAndRunAccessPoint(config, &wifiServer);
+    }
 }
 
 void startAndRunAccessPoint(WiFiConfig *config, WiFiServer *wifiServer)
 {
-    Serial.println("[WC] creating access point: `Arduino Config Access Point`");
-    WiFi.config(IPAddress(192, 48, 56, 2));
-    int wifiStatus = WiFi.beginAP("Arduino Config Access Point", "bob barker");
+    Serial.println("[WC] creating access point: `Arduino WiFi Config AP`");
+    if (config->ip)
+    {
+        WiFi.config(*config->ip);
+    }
+    else
+    {
+        WiFi.config(IPAddress(192, 48, 56, 2));
+    }
+    int wifiStatus = WiFi.beginAP("Arduino WiFi Config AP");
     printWiFiStatus();
     if (wifiStatus != WL_AP_LISTENING)
     {
@@ -324,9 +389,9 @@ void startAndRunAccessPoint(WiFiConfig *config, WiFiServer *wifiServer)
     }
 
     Serial.println("[WC] WAITING FOR WIFI TO START");
-    delay(10000);
+    delay(5000);
     wifiServer->begin();
-    Serial.println("WAITING FOR A CONNECTION");
+    Serial.println("[WC] WAITING FOR A CONNECTION");
 
     while (true)
     {
@@ -356,11 +421,12 @@ void startAndRunAccessPoint(WiFiConfig *config, WiFiServer *wifiServer)
                 strcpy(config->password, request->password);
                 free(request->password);
             }
+            config->ip = request->ip;
             Serial.println(config->ssid);
             Serial.println(config->password);
-            Serial.println("CONFIG UPDATED");
+            Serial.println(config->ip->toString());
+            Serial.println("[WC] CONFIG UPDATED");
         }
         free(request);
-        Serial.println("REQUEST FREE'D");
     }
 }

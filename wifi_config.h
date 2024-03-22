@@ -13,6 +13,7 @@ struct WiFiConfig
 {
     char *ssid;
     char *password;
+    IPAddress *ip;
 };
 
 struct Request
@@ -21,6 +22,7 @@ struct Request
     char path[33];
     char *ssid;
     char *password;
+    IPAddress *ip;
 };
 
 void saveConfig(WiFiConfig *config);
