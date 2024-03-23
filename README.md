@@ -2,12 +2,12 @@
 **!!!WORK IN PROGRESS!!!**
 
 # UI
-
-**NOTE:** You must load the UI over http not https.
+Repository: https://github.com/smartfastlabs/arduino-wifi-config
 
 To use the UI:
+**NOTE:** You must load the UI over http not https.
 
-- Open http://config.arduino-wifi.com
+- Open http://connect.arduino-wifi.com
 - Switch your WiFi to the Access Point
 - Configure WiFi credentials.
 - Click Run
