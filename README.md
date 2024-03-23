@@ -36,6 +36,8 @@ Repository: https://github.com/smartfastlabs/arduino-wifi-config-frontend
 # Configure your WiFi credentials and IP
 <img width="679" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/4845e870-a48e-4b67-aacd-f7a3ae4e8df6">
 
+# Click "UPDATE WIFI CONFIG"
+
 # Click "Save Changes and Connect"
 <img width="661" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/3455ab6c-b246-4977-905f-10027efa73c3">
 
