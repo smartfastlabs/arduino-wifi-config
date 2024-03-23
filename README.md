@@ -1,5 +1,15 @@
 # EASILY CONFIGURE YOUR ARDUINO'S WIFI
 
+## Project Status
+
+This project is in active development, I am looking for alpha testers.  
+
+So far this has been tested on and is compatible with:
+
+- UNO R4 WIFI -- Library Used: WiFiS3
+- Nano 33 IoT -- Library Used: WiFiNINA
+
+
 # Installation
 ## Download Repository (Download ZIP)
 <img width="930" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/04641ec6-dadd-4e67-8fe7-cb21d13d531e">
