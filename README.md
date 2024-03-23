@@ -13,7 +13,7 @@
 
 
 # UI
-Repository: https://github.com/smartfastlabs/arduino-wifi-config
+Repository: https://github.com/smartfastlabs/arduino-wifi-config-frontend
 
 **NOTE:** You must load the UI over http not https.
 
