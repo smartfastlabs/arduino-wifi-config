@@ -8,6 +8,8 @@
 
 #if __has_include(<EEPROM.h>)
 #include <EEPROM.h>
+#else
+#include <FlashAsEEPROM.h>
 #endif
 struct WiFiConfig
 {

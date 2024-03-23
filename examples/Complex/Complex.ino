@@ -1,5 +1,11 @@
+// UNO R4 WiFi
 #include <WiFiS3.h>
 #include <EEPROM.h>
+
+// Nano IOT
+// #include <WiFiNINA.h>
+// #include <FlashAsEEPROM.h>
+
 #include <wifi_config.h>
 
 bool ledValue = false;

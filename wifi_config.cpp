@@ -6,7 +6,6 @@ const int OPTION = 2;
 const int POST = 1;
 const int DATA_SYMBOL = 100;
 
-#if __has_include(<EEPROM.h>)
 void saveConfig(WiFiConfig *config)
 {
     EEPROM.write(0, DATA_SYMBOL);
@@ -51,6 +50,9 @@ void saveConfig(WiFiConfig *config)
 
         EEPROM.write(eepromIdx++, 0);
     }
+#if __has_include(<FlashAsEEPROM.h>)
+    EEPROM.commit();
+#endif
 }
 
 void freeRequest(Request *req)
@@ -109,7 +111,6 @@ WiFiConfig *loadConfig()
 
     return config;
 }
-#endif
 
 void printWiFiStatus()
 {
@@ -397,7 +398,9 @@ void startAndRunAccessPoint(WiFiConfig *config, WiFiServer *wifiServer)
         if (isPrefix(request->path, "run"))
         {
             Serial.println("[WC] Shutting Down AP");
+#if __has_include(<WiFiS3.h>)
             wifiServer->end();
+#endif
             WiFi.end();
             freeRequest(request);
             return;
