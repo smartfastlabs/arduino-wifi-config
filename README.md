@@ -1,15 +1,19 @@
 # EASILY CONFIGURE YOUR ARDUINO'S WIFI
-**!!!WORK IN PROGRESS!!!**
+
+# Installation
+## Download Repository (Download ZIP)
+<img width="930" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/04641ec6-dadd-4e67-8fe7-cb21d13d531e">
+
+## Install Library (Add.zip Library)
+<img width="554" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/05b29074-a14c-4cfb-a317-7e5da754f0ef">
+
+## Open Example(s)
+<img width="353" alt="image" src="https://github.com/smartfastlabs/arduino-wifi-config/assets/598661/cf6f2929-2303-4305-9609-3d68361fa2d5">
+
+
 
 # UI
 Repository: https://github.com/smartfastlabs/arduino-wifi-config
-<center>
-
-
-
-</center>
-
-To use the UI:
 
 **NOTE:** You must load the UI over http not https.
 
